@@ -1,0 +1,98 @@
+#header {
+	justify-content: space-between;
+	padding: 15px;
+}
+
+#header::before {
+	content: "";
+	display: block;
+	position: absolute;
+	background-image: url(./assets/logo-background.svg);
+	width: 430px;
+	height: 300px;
+	top: -30px;
+	left: -50px;
+	z-index: -1;
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
+.logo {
+	background-image: url(./assets/logo.svg);
+	width: 80px;
+	height: 80px;
+	margin-right: 20px;
+}
+
+.logo-text {
+	font-family: Roboto;
+	font-size: 50px;
+	font-weight: 400;
+	text-transform: uppercase;
+	color: #fff;
+}
+
+.logo-text span {
+	color: #c0d475;
+}
+
+#header nav {
+	overflow-x: visible;
+}
+
+#header a {
+	font-size: 26px;
+	color: #264e29;
+	margin-right: 80px;
+}
+
+#header .login-button {
+	color: #fff;
+	background-color: #264e29;
+	border-radius: 30px;
+	padding: 5px 30px;
+	transition: padding-right 0.3s;
+}
+
+#header .login-button:hover {
+	padding-right: 25px;
+}
+
+#header .login-button::after {
+	content: "";
+	display: inline-block;
+	background-image: url(./assets/login-icon.svg);
+	width: 24px;
+	height: 18px;
+	margin-left: 10px;
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+	transition: margin-left 0.3s;
+}
+
+#header .login-button:hover::after {
+	margin-left: 15px;
+}
+
+#header nav a:not(.login-button) {
+	position: relative;
+}
+
+#header nav a:not(.login-button)::after {
+	content: "";
+	position: absolute;
+	bottom: -5px;
+	left: 0;
+	right: 0;
+	margin: auto;
+	width: 0%;
+	background: #264e29;
+	height: 1px;
+	transition: width 0.3s;
+}
+
+#header nav a:not(.login-button):hover::after {
+	width: 95%;
+}
