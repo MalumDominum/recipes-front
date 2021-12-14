@@ -1,5 +1,9 @@
 .page-content {
-	padding: 0 75px;
+	display: flex;
+	align-items: flex-end;
+	flex-wrap: nowrap;
+	padding: 0 60px;
+	margin-bottom: 30px;
 }
 
 .heading-container {
@@ -34,73 +38,171 @@
 	z-index: -2;
 }
 
-.filter-container {
-	flex-direction: column;
-	width: 340px;
-	padding: 10px;
-	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
-	border-radius: 30px;
-}
+/* Recipes cards */
 
-.section-container {
-	width: 90%;
-	flex-direction: column;
+.cards-container {
+	position: sticky;
+	bottom: 5%;
+	margin-left: 60px;
+	gap: 40px;
 	align-items: flex-start;
 }
 
-.section-container::after {
+.card-container {
+	position: relative;
+	overflow: hidden;
+	width: 300px;
+	height: 300px;
+	padding: 20px;
+	box-shadow: inset 0px -120px 50px -25px rgb(0 0 0 / 70%);
+	filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.25));
+	border-radius: 30px;
+	text-align: center;
+	color: #fff;
+	transition: all 0.3s;
+}
+
+.card-container:hover {
+	box-shadow: inset 0px -90px 50px -25px rgba(0 0 0 / 70%), inset 0 0 50px 1000px rgb(0 0 0 / 70%);
+}
+
+.coocking-time,
+.author,
+.card-links,
+.bookmark-button {
+	position: absolute;
+	top: -50px;
+	transition: all 0.3s;
+}
+
+.rating-container,
+.bookmark-count {
+	position: absolute;
+	bottom: -50px;
+	transition: all 0.3s;
+}
+
+.card-heading {
+	position: absolute;
+	max-width: 90%;
+	bottom: 10px;
+	font-size: 1.5em;
+	font-weight: 500;
+	line-height: 1em;
+	color: #fff;
+	transition: all 0.3s;
+}
+
+.card-container:hover .card-heading {
+	bottom: 50%;
+	transform: translate(0, 50%);
+}
+
+.coocking-time {
+	font-size: 20px;
+}
+
+.coocking-time::before {
 	content: "";
-	width: 100%;
-	height: 2px;
-	margin-top: 20px;
-	border-radius: 1px;
+	display: inline-block;
+	background-image: url(./assets/time.svg);
+	width: 30px;
+	height: 35px;
+	margin: 0 5px -7px 0;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+}
+
+.card-container:hover .coocking-time {
+	top: 20px;
+}
+
+.author {
+	color: #aaa;
+	font-size: 12px;
+}
+
+.card-container:hover .author {
+	top: 60px;
+}
+
+.card-links a,
+.card-links span {
+	color: #bdf09d;
+	text-transform: uppercase;
+	font-size: 12px;
+}
+
+.card-links span {
+	margin: 0 5px;
+}
+
+.card-links a:hover {
+	text-decoration: underline;
+}
+
+.card-container:hover .card-links {
+	top: 79px;
+}
+
+.bookmark-button,
+.bookmark-count::before {
+	background-image: url(./assets/bookmark-white.svg);
+	clip-path: polygon(100% 0, 100% 100%, 50% 80%, 0 100%, 0 0);
+	border-radius: 4px 4px 0 0;
+}
+.bookmark-button {
+	width: 30px;
+	height: 38px;
+	right: 20px;
+}
+.bookmark-button.saved {
 	background-color: #5a9b32;
 }
 
-.section-container:last-of-type:after {
-	display: none;
+.card-container:hover .bookmark-button {
+	top: 20px;
+}
+.bookmark-count {
+	right: 20px;
+}
+.bookmark-count::before {
+	content: "";
+	display: inline-block;
+	width: 20px;
+	height: 25px;
+	right: 20px;
+	margin: 0 5px -7px 0;
+	background-color: #fff;
+	filter: brightness(70%);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+}
+.card-container:hover .bookmark-count {
+	bottom: 20px;
 }
 
-.collapse-button,
-.item-container {
-	font-family: Roboto;
-	font-size: 20px;
-	color: #484848;
+.card-container:hover .rating-container {
+	bottom: 60px;
 }
 
-.collapse-button {
-	width: 100%;
-	padding: 6px;
-	margin: 10px 0;
-	justify-content: space-between;
-	color: #5a9b32;
+.stars {
+	--percent: calc(var(--rating) / 5 * 100%);
+	--star-background: #c4c4c4;
+	--star-color: #f5ed22;
+
+	display: inline-block;
+	font-size: 32px;
+	font-family: Times;
+	line-height: 1;
 }
 
-.collapse-button .img {
-	background-image: url(./assets/arrow.svg);
-	width: 24px;
-	height: 14px;
-}
-
-.section-container input[type="search"] {
-	width: 100%;
-}
-
-.count {
-	font-size: 0.9em;
-	margin-left: 10px;
-	color: #aaaaaa;
-}
-
-.range-container input {
-	width: 50px;
-	height: 36px;
-	text-align: center;
-	padding: 0;
-}
-
-.range-container span {
-	margin: 0 10px;
-	font-size: 18px;
-	color: #aaaaaa;
+.stars::before {
+	content: "★★★★★";
+	letter-spacing: 3px;
+	background: linear-gradient(90deg, var(--star-color) var(--percent), var(--star-background) var(--percent));
+	background-clip: text;
+	color: transparent;
 }
