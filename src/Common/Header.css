@@ -7,7 +7,7 @@
 	content: "";
 	display: block;
 	position: absolute;
-	background-image: url(./assets/logo-background.svg);
+	background-image: url(~/assets/logo-background.svg);
 	width: 430px;
 	height: 300px;
 	top: -30px;
@@ -19,7 +19,7 @@
 }
 
 .logo {
-	background-image: url(./assets/logo.svg);
+	background-image: url(~/assets/logo.svg);
 	width: 80px;
 	height: 80px;
 	margin-right: 20px;
@@ -62,7 +62,7 @@
 #header .login-button::after {
 	content: "";
 	display: inline-block;
-	background-image: url(./assets/login-icon.svg);
+	background-image: url(~/assets/login-icon.svg);
 	width: 24px;
 	height: 18px;
 	margin-left: 10px;

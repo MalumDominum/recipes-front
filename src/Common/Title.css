@@ -1,0 +1,31 @@
+.title-container {
+	margin: 75px 0 250px 0;
+}
+
+#main-title {
+	position: relative;
+	text-transform: uppercase;
+	font-family: "JetBrains Mono";
+	color: #264e29;
+	font-size: 75px;
+}
+
+#main-title::before {
+	content: attr(data-text);
+	position: absolute;
+	top: 103%;
+	margin-top: -1em;
+	margin-left: -1em;
+	z-index: -1;
+	font-size: 2em;
+	color: #fff;
+}
+
+.waves-background {
+	position: absolute;
+	background-image: url(~/assets/waves-background.svg);
+	top: -300px;
+	width: 100%;
+	height: 800px;
+	z-index: -2;
+}

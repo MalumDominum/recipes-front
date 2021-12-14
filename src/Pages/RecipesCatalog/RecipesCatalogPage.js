@@ -1,18 +1,10 @@
 import React, { useState } from "react";
-import "./index.css";
+import { Link } from "react-router-dom";
+import Header from "~/Common/Header.js";
+import Heading from "~/Common/Title.js";
+import "~/index.css";
+import "~/Common/Filter.css";
 import "./Recipes.css";
-import "./Filter.css";
-
-const Heading = (props) => {
-	return (
-		<div className="heading-container">
-			<div className="img waves-background"></div>
-			<h1 id="main-heading" data-text={props.children}>
-				{props.children}
-			</h1>
-		</div>
-	);
-};
 
 const SectionContainer = (props) => {
 	const [isCollapsed, setCollapse] = useState(false);
@@ -93,13 +85,13 @@ const RecipeCard = (props) => {
 			<div className="coocking-time">{props.time} минут</div>
 			<div className="author">Автор: {props.author}</div>
 			<div className="card-links">
-				<a href={"/categories/" + props.categoryId}>{props.category}</a>
+				<Link to={"/recipes?categories=" + props.categoryId}>{props.category}</Link>
 				<span>•</span>
-				<a href={"/cuisines/" + props.cuisineId}>{props.cuisine} кухня</a>
+				<Link to={"/recipes?cuisines=" + props.cuisineId}>{props.cuisine} кухня</Link>
 			</div>
-			<a href={"/recipes/" + props.recipeId} className="card-heading">
+			<Link to={"/recipes/" + props.recipeId} className="card-heading">
 				{props.heading}
-			</a>
+			</Link>
 			{/*<button className="ingredients-button">{props.ingredientCount} Ингредиентов</button>*/}
 			<div className="rating-container">
 				<div className="stars" style={{ "--rating": props.rating }}>
@@ -115,9 +107,10 @@ const RecipeCard = (props) => {
 	);
 };
 
-const Recipes = () => {
+const RecipesCatalogPage = () => {
 	return (
 		<>
+			<Header />
 			<Heading>Рецепты</Heading>
 			<div className="page-content">
 				<div className="filter-container">
@@ -178,4 +171,4 @@ const Recipes = () => {
 	);
 };
 
-export default Recipes;
+export default RecipesCatalogPage;

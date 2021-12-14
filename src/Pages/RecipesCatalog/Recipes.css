@@ -6,38 +6,6 @@
 	margin-bottom: 30px;
 }
 
-.heading-container {
-	margin: 75px 0 250px 0;
-}
-
-#main-heading {
-	position: relative;
-	text-transform: uppercase;
-	font-family: "JetBrains Mono";
-	color: #264e29;
-	font-size: 75px;
-}
-
-#main-heading::before {
-	content: attr(data-text);
-	position: absolute;
-	top: 104%;
-	margin-top: -1em;
-	margin-left: -1em;
-	z-index: -1;
-	font-size: 2em;
-	color: #fff;
-}
-
-.waves-background {
-	position: absolute;
-	background-image: url(./assets/waves-background.svg);
-	top: -300px;
-	width: 100%;
-	height: 800px;
-	z-index: -2;
-}
-
 /* Recipes cards */
 
 .cards-container {
@@ -105,7 +73,7 @@
 .coocking-time::before {
 	content: "";
 	display: inline-block;
-	background-image: url(./assets/time.svg);
+	background-image: url(~/assets/time.svg);
 	width: 30px;
 	height: 35px;
 	margin: 0 5px -7px 0;
@@ -148,7 +116,7 @@
 
 .bookmark-button,
 .bookmark-count::before {
-	background-image: url(./assets/bookmark-white.svg);
+	background-image: url(~/assets/bookmark-white.svg);
 	clip-path: polygon(100% 0, 100% 100%, 50% 80%, 0 100%, 0 0);
 	border-radius: 4px 4px 0 0;
 }

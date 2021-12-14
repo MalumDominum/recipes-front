@@ -54,7 +54,7 @@
 }
 
 .collapse-button .img {
-	background-image: url(./assets/arrow.svg);
+	background-image: url(~/assets/arrow.svg);
 	width: 24px;
 	height: 14px;
 	transition: transform 0.3s 0.1s;
