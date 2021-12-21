@@ -1,0 +1,21 @@
+.card-container.ingredient {
+	box-shadow: inset 0px -120px 50px -25px rgba(255, 255, 255, 0.6);
+}
+
+.card-container.ingredient:hover {
+	box-shadow: inset 0px -130px 50px -25px rgba(255, 255, 255, 0.9), inset 0 0 50px 1000px rgba(255, 255, 255, 0.4);
+}
+
+.card-container.ingredient .card-heading {
+	font-size: 2em;
+	font-weight: 500;
+	color: #000;
+}
+
+.recipes-count {
+	max-width: 200px;
+	font-weight: 600;
+}
+.recipes-count:hover {
+	color: var(--dark-color);
+}

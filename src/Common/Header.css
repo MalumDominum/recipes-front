@@ -34,53 +34,33 @@
 }
 
 .logo-text span {
-	color: #c0d475;
+	color: var(--primary-color);
 }
 
-#header nav {
-	overflow-x: visible;
+.header-nav a:not([class^="sign"][class$="button"]) {
+	color: var(--dark-color);
 }
 
-#header a {
+.header-nav > a,
+.header-nav > div {
 	font-size: 26px;
-	color: #264e29;
 	margin-right: 80px;
 }
 
-#header .login-button {
-	color: #fff;
-	background-color: #264e29;
-	border-radius: 30px;
-	padding: 5px 30px;
-	transition: padding-right 0.3s;
-}
-
-#header .login-button:hover {
-	padding-right: 25px;
-}
-
-#header .login-button::after {
-	content: "";
+.header-nav > div {
 	display: inline-block;
-	background-image: url(~/assets/login-icon.svg);
-	width: 24px;
-	height: 18px;
-	margin-left: 10px;
-	background-position: center;
-	background-size: cover;
-	background-repeat: no-repeat;
-	transition: margin-left 0.3s;
+	text-align: center;
 }
 
-#header .login-button:hover::after {
-	margin-left: 15px;
+.user-info {
+	margin-bottom: 10px;
 }
 
-#header nav a:not(.login-button) {
+.header-nav a:not([class^="sign"][class$="button"]) {
 	position: relative;
 }
 
-#header nav a:not(.login-button)::after {
+.header-nav a:not([class^="sign"][class$="button"])::after {
 	content: "";
 	position: absolute;
 	bottom: -5px;
@@ -88,11 +68,11 @@
 	right: 0;
 	margin: auto;
 	width: 0%;
-	background: #264e29;
-	height: 1px;
+	background: var(--dark-color);
+	height: 1.5px;
 	transition: width 0.3s;
 }
 
-#header nav a:not(.login-button):hover::after {
+.header-nav a:not([class^="sign"][class$="button"]):hover::after {
 	width: 95%;
 }

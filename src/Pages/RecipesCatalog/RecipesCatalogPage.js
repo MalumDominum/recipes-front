@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { UrlContext } from "~/App";
+import sendRequest from "~/Common/sendRequest";
 import Header from "~/Common/Header.js";
 import Heading from "~/Common/Title.js";
 import "~/index.css";
@@ -71,14 +73,36 @@ const CheckboxItem = (props) => {
 	);
 };
 
+const Filter = (props) => {
+	return (
+		<div className="filter-container">
+			<SearchItem heading="Название блюда" />
+			<SliderItem heading="Категория" unit="Минут" minValue="5" maxValue="30" />
+			<CheckboxFilterSection heading="Категория" count="37">
+				{[...Array(30).keys()].map((n) => (
+					<CheckboxItem content="Выпечка и десерты" count="96" />
+				))}
+			</CheckboxFilterSection>
+			<CheckboxFilterSection heading="Категория" count="37">
+				{[...Array(30).keys()].map((n) => (
+					<CheckboxItem content="Выпечка и десерты" count="96" />
+				))}
+			</CheckboxFilterSection>
+			<CheckboxFilterSection heading="Категория" count="37">
+				{[...Array(30).keys()].map((n) => (
+					<CheckboxItem content="Выпечка и десерты" count="96" />
+				))}
+			</CheckboxFilterSection>
+		</div>
+	);
+};
+
 const RecipeCard = (props) => {
 	const [isBookmarked, setBookmark] = useState(props.isSaved);
 
-	const bookmarkOnClickHandle = function () {
-		setBookmark((isBookmarked) => !isBookmarked);
-	};
+	const bookmarkOnClickHandle = () => setBookmark((isBookmarked) => !isBookmarked);
 
-	let backgroundImage = { backgroundImage: "url(" + process.env.PUBLIC_URL + "/recipes/" + props.image + ")" };
+	const backgroundImage = { backgroundImage: "url(data:image/jpg;base64," + props.image + ")" };
 
 	return (
 		<div className="card-container img" style={backgroundImage}>
@@ -108,61 +132,34 @@ const RecipeCard = (props) => {
 };
 
 const RecipesCatalogPage = () => {
+	const [recipes, setRecipes] = useState();
+	const apiRequestUrl = useContext(UrlContext) + "recipes";
+
+	useEffect(() => sendRequest(null, apiRequestUrl, "GET").then(setRecipes).catch(console.log), []);
+
 	return (
 		<>
 			<Header />
 			<Heading>Рецепты</Heading>
 			<div className="page-content">
-				<div className="filter-container">
-					<SearchItem heading="Название блюда" />
-					<SliderItem heading="Категория" unit="Минут" minValue="5" maxValue="30" />
-					<CheckboxFilterSection heading="Категория" count="37">
-						{[...Array(30).keys()].map((n) => (
-							<CheckboxItem content="Выпечка и десерты" count="96" />
-						))}
-					</CheckboxFilterSection>
-					<CheckboxFilterSection heading="Категория" count="37">
-						{[...Array(30).keys()].map((n) => (
-							<CheckboxItem content="Выпечка и десерты" count="96" />
-						))}
-					</CheckboxFilterSection>
-					<CheckboxFilterSection heading="Категория" count="37">
-						{[...Array(30).keys()].map((n) => (
-							<CheckboxItem content="Выпечка и десерты" count="96" />
-						))}
-					</CheckboxFilterSection>
-				</div>
+				<Filter />
 				<div className="cards-container">
-					<RecipeCard
-						heading="Сашими из свеклы с салатом корн и медово-горчичной заправкой"
-						image="sashimi.jpg"
-						recipeId="1"
-						category="Салаты"
-						categoryId="1"
-						cuisine="Японская"
-						cuisineId="1"
-						author="Алексей Зимин"
-						time="10"
-						rating={4.89}
-						bookmarkCount="307"
-						ingredientCount="10"
-						isSaved={true}
-					/>
-					{[...Array(30).keys()].map((n) => (
+					{recipes?.map((r) => (
 						<RecipeCard
-							heading="Манная каша а-ля паннакотта"
-							image="semolina.jpg"
-							recipeId="1"
-							category="Выпечка и десерты"
-							categoryId="1"
-							cuisine="Японская"
-							cuisineId="1"
-							author="Алексей Зимин"
-							time="10"
-							rating={4.32}
+							key={r.id}
+							recipeId={r.id}
+							heading={r.name}
+							image={r.image}
+							category="blank"
+							categoryId={r.categoryId}
+							cuisine="blank"
+							cuisineId={r.cuisineId}
+							author="blank"
+							time={r.cookingTime}
+							rating={4.39}
 							bookmarkCount="307"
-							ingredientCount="11"
-							isSaved={false}
+							ingredientCount="10"
+							isSaved={true}
 						/>
 					))}
 				</div>
@@ -172,3 +169,4 @@ const RecipesCatalogPage = () => {
 };
 
 export default RecipesCatalogPage;
+export { Filter };

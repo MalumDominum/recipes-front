@@ -1,0 +1,14 @@
+.form-container {
+	flex-direction: column;
+	width: fit-content;
+	gap: 30px;
+	margin: -20px auto 50px auto;
+}
+
+.form-container .container {
+	gap: 30px;
+}
+
+.link {
+	color: var(--dark-color);
+}
