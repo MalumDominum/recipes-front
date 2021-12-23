@@ -8,3 +8,36 @@ textarea.description {
 	min-height: 300px;
 	padding: 10px;
 }
+
+.upload-label {
+	position: relative;
+	top: 20px;
+	width: 96%;
+	height: 200px;
+	margin-bottom: 30px;
+	gap: 10px !important;
+	flex-direction: column;
+	text-align: center;
+	background-color: rgb(246, 246, 246);
+	border: 3px solid rgb(246, 246, 246);
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+.upload-label:hover {
+	border-color: var(--primary-color);
+}
+
+#upload-photo {
+	position: absolute;
+	clip: rect(0px, 0px, 0px, 0px);
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+}
+
+.upload-img {
+	background-image: url(~/assets/upload-photo.svg);
+	width: 55px;
+	height: 50px;
+}
