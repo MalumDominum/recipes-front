@@ -15,7 +15,7 @@ import LoginPage from "~/Pages/Authorization/LoginPage";
 import CreateRecipePage from "~/Pages/CreateRecipe/CreateRecipePage";
 import NotFoundPage from "~/Pages/NotFound/NotFoundPage";
 
-const apiUrl = "https://localhost:44334/api/";
+const apiUrl = "https://localhost:7103/api/";
 const UrlContext = createContext(apiUrl);
 
 const App = () => {

@@ -19,7 +19,7 @@ const Ingredient = (props) => {
 			.then(setGroup)
 			.catch(console.log);
 
-		sendRequest(null, rootApiUrl + "/IngredientRecipe/Ingredients/" + props.id, "GET")
+		sendRequest(null, rootApiUrl + "/ingredientRecipe/ingredients/" + props.id, "GET")
 			.then(setRecipes)
 			.catch(console.log);
 	}, []);

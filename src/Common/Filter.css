@@ -133,6 +133,10 @@
 	justify-content: start;
 }
 
+.checkbox-container span {
+	max-width: 180px;
+}
+
 .checkbox-container:hover {
 	background-color: var(--hover-background-color);
 	border-radius: 10px;

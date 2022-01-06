@@ -4,9 +4,8 @@ import { UrlContext } from "~/App";
 import sendRequest from "~/Common/sendRequest";
 import Header from "~/Common/Header";
 import Heading from "~/Common/Title";
-import { Filter } from "~/Pages/RecipesCatalog/RecipesCatalogPage";
+import { IngredientsFilter } from "~/Common/Filter";
 import "~/index.css";
-import "~/Common/Filter.css";
 import "./Ingredients.css";
 
 const IngredientCard = (props) => {
@@ -35,7 +34,7 @@ const IngredientsCatalogPage = () => {
 			<Header />
 			<Heading>Ингредиенты</Heading>
 			<div className="page-content">
-				<Filter />
+				<IngredientsFilter setFiltered={setIngredients} />
 				<div className="cards-container">
 					{ingredients?.map((i) => (
 						<IngredientCard key={i.id} ingredientId={i.id} heading={i.name} image={i.image} />

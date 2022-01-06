@@ -164,7 +164,8 @@ select:focus-visible {
 
 input[type="search"]::-webkit-search-cancel-button {
 	position: relative;
-	right: 10px;
+	margin-left: 12px;
+	right: 5px;
 	-webkit-appearance: none;
 	background: url(./assets/cancel.svg);
 	cursor: pointer;

@@ -20,6 +20,40 @@ const initialState = {
 	steps: "",
 };
 
+const Select = ({ options, setState, name }) => {
+	return (
+		<select onChange={setState} name={name}>
+			{options.map((option) => (
+				<option value={option.id} key={option.id}>
+					{option.name}
+				</option>
+			))}
+		</select>
+	);
+};
+
+const FileUploader = ({ selectedFile, setSelectedFile }) => {
+	const fileUploadedHandler = (event) => setSelectedFile(event.target.files[0]);
+
+	const supportedTypes = ["image/jpeg", "image/jpg", "image/png"];
+
+	return (
+		<label className="upload-label container" htmlFor="upload-photo">
+			<input id="upload-photo" type="file" name="file" onChange={fileUploadedHandler} required />
+			<div className="upload-img"></div>
+			<span>{!selectedFile ? "Добавить фото (Загрузить)" : "Фото загружено"}</span>
+			{selectedFile && supportedTypes.includes(selectedFile.type) ? (
+				<>
+					<span>Название файла: {selectedFile.name}</span>
+					<span>Размер: {Math.round((selectedFile.size / 1024 / 1024 + Number.EPSILON) * 100) / 100} Mb</span>
+				</>
+			) : selectedFile ? (
+				<span>Поддерживаются фотографии только {supportedTypes.map((t) => t.split("/")[1] + " ")}форматов</span>
+			) : null}
+		</label>
+	);
+};
+
 const CreateForm = () => {
 	const navigate = useNavigate();
 	const [recipe, setRecipeValue] = useValueSaver(initialState);
@@ -44,30 +78,13 @@ const CreateForm = () => {
 		[]
 	);
 
-	const fileUploadedHandler = (event) => setSelectedFile(event.target.files[0]);
-
-	const supportedTypes = ["image/jpeg", "image/jpg", "image/png"];
-
 	const onSubmitHandle = (event) => {
 		event.preventDefault();
 		const reader = new FileReader();
 		reader.readAsDataURL(selectedFile);
 		reader.onload = async () => {
 			const image = reader.result.substring(reader.result.indexOf(",") + 1);
-			console.log({
-				name: recipe.name,
-				image: image,
-				cookingTime: parseInt(recipe.cookingTime),
-				calories: parseInt(recipe.calories),
-				proteins: parseInt(recipe.proteins),
-				fats: parseInt(recipe.fats),
-				carbs: parseInt(recipe.carbs),
-				categoryId: parseInt(recipe.categoryId),
-				cuisineId: parseInt(recipe.cuisineId),
-				description: recipe.description,
-				steps: recipe.steps,
-				authorId: parseInt(token.id),
-			});
+
 			await sendRequest(
 				{
 					name: recipe.name,
@@ -86,9 +103,7 @@ const CreateForm = () => {
 				apiRootUrl + "recipes",
 				"POST"
 			)
-				.then((response) => {
-					navigate("/recipes/" + response.id);
-				})
+				.then((response) => navigate("/recipes/" + response.id))
 				.catch(console.log);
 		};
 		reader.onerror = console.log;
@@ -107,40 +122,10 @@ const CreateForm = () => {
 				<input value={recipe.carbs} onChange={setRecipeValue} name="carbs" type="text" placeholder="Углеводы" maxLength="5" />
 			</div>
 			<div className="container">
-				{categoryOptions ? (
-					<select onChange={setRecipeValue} name="categoryId">
-						{categoryOptions.map((option) => (
-							<option value={option.id} key={option.id}>
-								{option.name}
-							</option>
-						))}
-					</select>
-				) : null}
-
-				{cuisineOptions ? (
-					<select onChange={setRecipeValue} name="cuisineId">
-						{cuisineOptions.map((option) => (
-							<option value={option.id} key={option.id}>
-								{option.name + " кухня"}
-							</option>
-						))}
-					</select>
-				) : null}
+				{categoryOptions ? <Select options={categoryOptions} setState={setRecipeValue} name="categoryId" /> : null}
+				{cuisineOptions ? <Select options={cuisineOptions} setState={setRecipeValue} name="cuisineId" /> : null}
 			</div>
-
-			<label className="upload-label container" htmlFor="upload-photo">
-				<input id="upload-photo" type="file" name="file" onChange={fileUploadedHandler} required />
-				<div className="upload-img"></div>
-				<span>{!selectedFile ? "Добавить фото (Загрузить)" : "Фото загружено"}</span>
-				{selectedFile && supportedTypes.includes(selectedFile.type) ? (
-					<>
-						<span>Название файла: {selectedFile.name}</span>
-						<span>Размер: {Math.round((selectedFile.size / 1024 / 1024 + Number.EPSILON) * 100) / 100} Mb</span>
-					</>
-				) : selectedFile ? (
-					<span>Поддерживаются фотографии только {supportedTypes.map((t) => t.split("/")[1] + " ")}форматов</span>
-				) : null}
-			</label>
+			<FileUploader selectedFile={selectedFile} setSelectedFile={setSelectedFile} />
 
 			<textarea value={recipe.description} onChange={setRecipeValue} name="description" type="text" placeholder="Описание" autoComplete="on" className="description" />
 			<textarea value={recipe.steps} onChange={setRecipeValue} name="steps" type="text" placeholder="Пошаговая инструкция" autoComplete="on" className="description" />
