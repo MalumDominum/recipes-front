@@ -16,7 +16,6 @@ export default function useToken() {
 		} else {
 			localStorage.setItem("token", null);
 			setToken(null);
-			console.log("set");
 		}
 	};
 

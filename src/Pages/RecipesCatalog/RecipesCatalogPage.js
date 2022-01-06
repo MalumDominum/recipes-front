@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { UrlContext } from "~/App";
+import useToken from "~/CustomHooks/useToken";
 import sendRequest from "~/Common/sendRequest";
 import Header from "~/Common/Header.js";
 import Heading from "~/Common/Title.js";
@@ -9,20 +10,61 @@ import "~/index.css";
 import "./Recipes.css";
 
 const RecipeCard = (props) => {
-	const [isBookmarked, setBookmark] = useState(props.isSaved);
+	const rootRequestUrl = useContext(UrlContext);
+	const [token] = useToken();
 
-	const bookmarkOnClickHandle = () => setBookmark((isBookmarked) => !isBookmarked);
+	const [extraData, setExtraData] = useState({});
+	const [isBookmarked, setIsBookmarked] = useState(false);
+
+	useEffect(async () => {
+		sendRequest(null, `${rootRequestUrl}bookmarks/recipes/${props.recipeId}`, "GET").then((bookmarks) =>
+			setIsBookmarked(bookmarks.map((b) => b.userId).includes(token.id))
+		);
+		let data = {};
+		await Promise.all([
+			sendRequest(null, `${rootRequestUrl}categories/${props.categoryId}`, "GET").then(
+				(category) => (data.category = category.name)
+			),
+			sendRequest(null, `${rootRequestUrl}cuisines/${props.cuisineId}`, "GET").then((cuisine) => (data.cuisine = cuisine.name)),
+			sendRequest(null, `${rootRequestUrl}users/${props.authorId}`, "GET").then(
+				(author) => (data.author = `${author.firstName} ${author.lastName}`)
+			),
+			sendRequest(null, `${rootRequestUrl}bookmarks/recipes/${props.recipeId}/count`, "GET").then((response) => {
+				data.bookmarksCount = response.count;
+				console.log(response);
+			}),
+		]);
+		setExtraData(data);
+	}, []);
+
+	const bookmarkOnClickHandle = () =>
+		!isBookmarked
+			? sendRequest(
+					{
+						userId: token.id,
+						recipeId: props.recipeId,
+					},
+					rootRequestUrl + "bookmarks",
+					"POST"
+			  )
+					.then(setIsBookmarked((isBookmarked) => !isBookmarked))
+					.catch(console.error)
+			: sendRequest(null, `${rootRequestUrl}bookmarks?userId=${token.id}&recipeId=${props.recipeId}`, "DELETE")
+					.then(setIsBookmarked((isBookmarked) => !isBookmarked))
+					.catch(console.error);
 
 	const backgroundImage = { backgroundImage: "url(data:image/jpg;base64," + props.image + ")" };
 
 	return (
 		<div className="card-container img" style={backgroundImage}>
 			<div className="coocking-time">{props.time} минут</div>
-			<div className="author">Автор: {props.author}</div>
+			<Link className="author" to={`/recipes/author/${props.authorId}`}>
+				Автор: {extraData.author}
+			</Link>
 			<div className="card-links">
-				<Link to={"/recipes?categories=" + props.categoryId}>{props.category}</Link>
+				<Link to={"/recipes?categories=" + props.categoryId}>{extraData.category}</Link>
 				<span>•</span>
-				<Link to={"/recipes?cuisines=" + props.cuisineId}>{props.cuisine} кухня</Link>
+				<Link to={"/recipes?cuisines=" + props.cuisineId}>{extraData.cuisine} кухня</Link>
 			</div>
 			<Link to={"/recipes/" + props.recipeId} className="card-heading">
 				{props.heading}
@@ -35,43 +77,70 @@ const RecipeCard = (props) => {
 				</div>
 				{props.rating}
 			</div>
-			<span className="bookmark-count">{props.bookmarkCount}</span>
+			<span className="bookmark-count">{extraData.bookmarksCount}</span>
 			<button className={"bookmark-button img" + (isBookmarked ? " saved" : "")} onClick={bookmarkOnClickHandle}></button>
 		</div>
 	);
 };
 
-const RecipesCatalogPage = () => {
-	const [recipes, setRecipes] = useState();
-	const apiRequestUrl = useContext(UrlContext) + "recipes";
+const RecipesCatalogPage = ({ filterByAuthor, filterSaved }) => {
+	const [recipes, setRecipes] = useState([]);
+	const [bookmarks, setBookmarks] = useState();
 
-	useEffect(() => sendRequest(null, apiRequestUrl, "GET").then(setRecipes).catch(console.log), []);
+	const rootRequestUrl = useContext(UrlContext);
+	const { authorId } = useParams();
+	const [token] = useToken();
+
+	const apiRequestUrl = filterByAuthor
+		? `${rootRequestUrl}recipes?authorId=${authorId}&`
+		: filterSaved
+		? `${rootRequestUrl}bookmarks/users/${token.id}`
+		: rootRequestUrl + "recipes?";
+	const [requestUrl, setRequestUrl] = useState(apiRequestUrl);
+
+	useEffect(() => {
+		sendRequest(null, requestUrl, "GET")
+			.then((response) => (!filterSaved ? setRecipes(response) : setBookmarks(response)))
+			.catch(console.error);
+	}, []);
+
+	useEffect(async () => {
+		if (Array.isArray(bookmarks) && bookmarks.length > 0) {
+			setRecipes([]);
+			let recipesTemp = [];
+			await Promise.all(
+				bookmarks.map((bookmark) =>
+					sendRequest(null, `${rootRequestUrl}recipes/${bookmark.recipeId}`, "GET")
+						.then((response) => recipesTemp.push(response))
+						.catch(console.error)
+				)
+			);
+			setRecipes(recipesTemp.sort((a, b) => a.id - b.id));
+		}
+	}, [bookmarks]);
 
 	return (
 		<>
 			<Header />
-			<Heading>Рецепты</Heading>
+			{filterSaved ? <Heading>Сохранённые</Heading> : <Heading>Рецепты</Heading>}
 			<div className="page-content">
-				<RecipesFilter setFiltered={setRecipes} />
+				{!filterSaved ? <RecipesFilter setFiltered={setRecipes} /> : null}
 				<div className="cards-container">
-					{recipes?.map((r) => (
-						<RecipeCard
-							key={r.id}
-							recipeId={r.id}
-							heading={r.name}
-							image={r.image}
-							category="blank"
-							categoryId={r.categoryId}
-							cuisine="blank"
-							cuisineId={r.cuisineId}
-							author="blank"
-							time={r.cookingTime}
-							rating={4.39}
-							bookmarkCount="307"
-							ingredientCount="10"
-							isSaved={true}
-						/>
-					))}
+					{Array.isArray(recipes) && recipes.length > 0
+						? recipes.map((r) => (
+								<RecipeCard
+									key={r.id}
+									recipeId={r.id}
+									heading={r.name}
+									image={r.image}
+									categoryId={r.categoryId}
+									cuisineId={r.cuisineId}
+									authorId={r.authorId}
+									time={r.cookingTime}
+									rating={4.39}
+								/>
+						  ))
+						: null}
 				</div>
 			</div>
 		</>

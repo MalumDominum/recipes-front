@@ -37,14 +37,14 @@
 	color: var(--primary-color);
 }
 
-.header-nav a:not([class^="sign"][class$="button"]) {
-	color: var(--dark-color);
+.header-nav {
+	width: 70vw;
+	justify-content: space-evenly;
+	font-size: 26px;
 }
 
-.header-nav > a,
-.header-nav > div {
-	font-size: 26px;
-	margin-right: 80px;
+.header-nav a:not([class^="sign"][class$="button"]) {
+	color: var(--dark-color);
 }
 
 .header-nav > div {
@@ -56,11 +56,11 @@
 	margin-bottom: 10px;
 }
 
-.header-nav a:not([class^="sign"][class$="button"]) {
+.header-nav a:not([class^="sign"][class$="button"], .user-info) {
 	position: relative;
 }
 
-.header-nav a:not([class^="sign"][class$="button"])::after {
+.header-nav a:not([class^="sign"][class$="button"], .user-info)::after {
 	content: "";
 	position: absolute;
 	bottom: -5px;

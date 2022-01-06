@@ -54,10 +54,25 @@ const FileUploader = ({ selectedFile, setSelectedFile }) => {
 	);
 };
 
+const IngredientInputs = () => {
+	const rootApiUrl = useContext(UrlContext);
+	const [ingredients, setIngredients] = useState();
+
+	useEffect(
+		() =>
+			sendRequest(null, rootApiUrl + "ingredients", "GET")
+				.then(setIngredients)
+				.catch(console.error),
+		[]
+	);
+
+	return null;
+};
+
 const CreateForm = () => {
 	const navigate = useNavigate();
 	const [recipe, setRecipeValue] = useValueSaver(initialState);
-	const [token, setToken] = useToken();
+	const [token] = useToken();
 	const apiRootUrl = useContext(UrlContext);
 	const [selectedFile, setSelectedFile] = useState();
 
@@ -67,14 +82,14 @@ const CreateForm = () => {
 		async () =>
 			await sendRequest(null, apiRootUrl + "categories", "GET")
 				.then(setCategoryOptions)
-				.catch(console.log),
+				.catch(console.error),
 		[]
 	);
 	useEffect(
 		async () =>
 			await sendRequest(null, apiRootUrl + "cuisines", "GET")
 				.then(setCuisineOptions)
-				.catch(console.log),
+				.catch(console.error),
 		[]
 	);
 
@@ -104,7 +119,7 @@ const CreateForm = () => {
 				"POST"
 			)
 				.then((response) => navigate("/recipes/" + response.id))
-				.catch(console.log);
+				.catch(console.error);
 		};
 		reader.onerror = console.log;
 	};
@@ -113,7 +128,15 @@ const CreateForm = () => {
 		<form className="form-container" onSubmit={onSubmitHandle}>
 			<div className="container">
 				<input value={recipe.name} onChange={setRecipeValue} name="name" type="text" placeholder="Название рецепта" required />
-				<input value={recipe.cookingTime} onChange={setRecipeValue} name="cookingTime" type="text" placeholder="Время приготовления" maxLength="3" required />
+				<input
+					value={recipe.cookingTime}
+					onChange={setRecipeValue}
+					name="cookingTime"
+					type="text"
+					placeholder="Время приготовления"
+					maxLength="3"
+					required
+				/>
 			</div>
 			<div className="params-container">
 				<input value={recipe.calories} onChange={setRecipeValue} name="calories" type="text" placeholder="Калории" maxLength="5" />
@@ -126,9 +149,25 @@ const CreateForm = () => {
 				{cuisineOptions ? <Select options={cuisineOptions} setState={setRecipeValue} name="cuisineId" /> : null}
 			</div>
 			<FileUploader selectedFile={selectedFile} setSelectedFile={setSelectedFile} />
-
-			<textarea value={recipe.description} onChange={setRecipeValue} name="description" type="text" placeholder="Описание" autoComplete="on" className="description" />
-			<textarea value={recipe.steps} onChange={setRecipeValue} name="steps" type="text" placeholder="Пошаговая инструкция" autoComplete="on" className="description" />
+			<IngredientInputs />
+			<textarea
+				value={recipe.description}
+				onChange={setRecipeValue}
+				name="description"
+				type="text"
+				placeholder="Описание"
+				autoComplete="on"
+				className="description"
+			/>
+			<textarea
+				value={recipe.steps}
+				onChange={setRecipeValue}
+				name="steps"
+				type="text"
+				placeholder="Пошаговая инструкция"
+				autoComplete="on"
+				className="description"
+			/>
 			<button className="sign-up-button">Добавить рецепт</button>
 		</form>
 	);

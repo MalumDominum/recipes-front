@@ -27,7 +27,7 @@ const IngredientsCatalogPage = () => {
 	const [ingredients, setIngredients] = useState();
 	const apiRequestUrl = useContext(UrlContext) + "ingredients";
 
-	useEffect(() => sendRequest(null, apiRequestUrl, "GET").then(setIngredients).catch(console.log), []);
+	useEffect(() => sendRequest(null, apiRequestUrl, "GET").then(setIngredients).catch(console.error), []);
 
 	return (
 		<>

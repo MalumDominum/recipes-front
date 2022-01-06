@@ -39,7 +39,7 @@ const Recipe = (props) => {
 			<div className="ingredients-count">{props.ingredientCount} Ингредиентов</div>
 			<ul className="ingredients-list">
 				{props.ingredients.map((i) => (
-					<li className="ingredient-item">
+					<li className="ingredient-item" key={i.id}>
 						<Link to={"/ingredients/" + i.id}>{i.heading}</Link>
 					</li>
 				))}
@@ -54,7 +54,7 @@ const RecipePage = () => {
 	const [recipe, setRecipe] = useState();
 	const apiRequestUrl = useContext(UrlContext) + "recipes/" + recipeId;
 
-	useEffect(() => sendRequest(null, apiRequestUrl, "GET").then(setRecipe).catch(console.log), []);
+	useEffect(() => sendRequest(null, apiRequestUrl, "GET").then(setRecipe).catch(console.error), []);
 
 	return (
 		<>

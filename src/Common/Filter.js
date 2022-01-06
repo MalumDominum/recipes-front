@@ -60,7 +60,7 @@ const CheckboxFilterSection = (props) => {
 	return options ? (
 		<SectionContainer heading={props.heading}>
 			<input type="search" onChange={(event) => setSearch(event.target.value)} placeholder="Поиск..." />
-			<div className="filter-items">{options.map((n) => (n.name.toLowerCase().includes(search ? search.toLowerCase() : "") ? <CheckboxItem content={n.name} count={null} /> : null))}</div>
+			<div className="filter-items">{options.map((n) => (n.name.toLowerCase().includes(search ? search.toLowerCase() : "") ? <CheckboxItem content={n.name} count={null} key={n.id} /> : null))}</div>
 		</SectionContainer>
 	) : null;
 };

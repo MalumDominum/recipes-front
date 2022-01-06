@@ -3,12 +3,16 @@ export default async function sendRequest(credentials, url, httpMethod) {
 		method: httpMethod,
 		headers: {
 			"Content-Type": "application/json",
+			"Access-Control-Allow-Credentials": true,
+			accept: "text/plain",
 		},
-		headers: { "Access-Control-Allow-Credentials": true, accept: "text/plain", "Content-Type": "application/json" },
 		body: credentials ? JSON.stringify(credentials) : null,
 		credentials: "include",
-	}).then((response) => {
-		if (response.ok) return response.json();
-		else throw new Error(response);
+	}).then(async (response) => {
+		if (response.ok) {
+			const text = await response.text();
+			return text === "" ? null : JSON.parse(text);
+		}
+		throw new Error(await response.text());
 	});
 }

@@ -26,8 +26,12 @@ const App = () => {
 					<Route path="/" element={<HomePage />} />
 					<Route path="/recipes" element={<RecipesCatalogPage />} />
 					<Route path="/recipes/:recipeId" element={<RecipePage />} />
+					<Route path="/recipes/author/:authorId" element={<RecipesCatalogPage filterByAuthor={true} />} />
 					<Route path="/recipes/new" element={<PrivateRoute />}>
 						<Route path="/recipes/new" element={<CreateRecipePage />} />
+					</Route>
+					<Route path="/recipes/saved" element={<PrivateRoute />}>
+						<Route path="/recipes/saved" element={<RecipesCatalogPage filterSaved={true} />} />
 					</Route>
 					<Route path="/ingredients" element={<IngredientsCatalogPage />} />
 					<Route path="/ingredients/:ingredientId" element={<IngredientPage />} />

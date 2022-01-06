@@ -24,10 +24,11 @@ const NavigationBar = () => {
 				<Link to="/recipes">Рецепты</Link>
 				<Link to="/ingredients">Ингредиенты</Link>
 				<Link to="/recipes/new">Добавить рецепт</Link>
+				<Link to="/recipes/saved">Сохранённые</Link>
 				<div>
-					<div className="user-info">
+					<Link to={"/recipes/author/" + token.id} className="user-info" style={{ display: "block" }}>
 						{token.firstName} {token.lastName}
-					</div>
+					</Link>
 					<button className="sign-out-button" onClick={() => setToken(null)}>
 						Выйти
 					</button>

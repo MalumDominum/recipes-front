@@ -20,7 +20,7 @@ const RegistrationForm = () => {
 	const navigate = useNavigate();
 	const [fields, setValue] = useValueSaver(initialState);
 	const [token, setToken] = useToken();
-	const apiRequestUrl = useContext(UrlContext) + "accounts/register";
+	const apiRequestUrl = useContext(UrlContext) + "users/register";
 
 	useEffect(() => {
 		if (token) navigate("/", { replace: true });
@@ -40,7 +40,7 @@ const RegistrationForm = () => {
 			"POST"
 		)
 			.then(setToken)
-			.catch(console.log);
+			.catch(console.error);
 	};
 
 	const passwordRegExp = "^(?=.*[a-z])(?=.*[A-Z])(?!=.*s).*$",
@@ -53,11 +53,39 @@ const RegistrationForm = () => {
 		<form className="form-container" onSubmit={onSubmitHandle}>
 			<div className="container">
 				<input value={fields.email} onChange={setValue} name="email" type="email" placeholder="Введите почту" required />
-				<input value={fields.password} onChange={setValue} name="password" type="password" placeholder="Введите пароль" pattern={passwordRegExp} title={passwordTitle} minlength={passwordMinLength} maxlength={passwordMaxLenght} />
+				<input
+					value={fields.password}
+					onChange={setValue}
+					name="password"
+					type="password"
+					placeholder="Введите пароль"
+					pattern={passwordRegExp}
+					title={passwordTitle}
+					minlength={passwordMinLength}
+					maxlength={passwordMaxLenght}
+				/>
 			</div>
 			<div className="container">
-				<input value={fields.firstName} onChange={setValue} name="firstName" type="text" placeholder="Введите имя" minlength="2" maxlength="32" required />
-				<input value={fields.lastName} onChange={setValue} name="lastName" type="text" placeholder="Введите фамилию" minlength="2" maxlength="32" required />
+				<input
+					value={fields.firstName}
+					onChange={setValue}
+					name="firstName"
+					type="text"
+					placeholder="Введите имя"
+					minlength="2"
+					maxlength="32"
+					required
+				/>
+				<input
+					value={fields.lastName}
+					onChange={setValue}
+					name="lastName"
+					type="text"
+					placeholder="Введите фамилию"
+					minlength="2"
+					maxlength="32"
+					required
+				/>
 			</div>
 			<button className="sign-up-button">Зарегистрироваться</button>
 			<Link to="/sign-in" className="link">

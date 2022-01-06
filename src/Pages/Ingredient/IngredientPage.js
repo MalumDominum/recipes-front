@@ -17,11 +17,11 @@ const Ingredient = (props) => {
 	useEffect(() => {
 		sendRequest(null, rootApiUrl + "ingredientGroups/" + props.groupId, "GET")
 			.then(setGroup)
-			.catch(console.log);
+			.catch(console.error);
 
 		sendRequest(null, rootApiUrl + "/ingredientRecipe/ingredients/" + props.id, "GET")
 			.then(setRecipes)
-			.catch(console.log);
+			.catch(console.error);
 	}, []);
 
 	const backgroundImage = { backgroundImage: "url(data:image/jpg;base64," + props.image + ")" };
@@ -48,7 +48,7 @@ const IngredientPage = () => {
 		() =>
 			sendRequest(null, rootApiUrl + "ingredients/" + ingredientId, "GET")
 				.then(setIngredient)
-				.catch(console.log),
+				.catch(console.error),
 		[]
 	);
 

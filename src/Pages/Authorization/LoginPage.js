@@ -18,7 +18,7 @@ const LoginForm = () => {
 	const navigate = useNavigate();
 	const [fields, setValue] = useValueSaver(initialState);
 	const [token, setToken] = useToken();
-	const apiRequestUrl = useContext(UrlContext) + "accounts/authenticate";
+	const apiRequestUrl = useContext(UrlContext) + "users/authenticate";
 
 	useEffect(() => {
 		if (token) navigate("/", { replace: true });
@@ -36,7 +36,7 @@ const LoginForm = () => {
 			"POST"
 		)
 			.then(setToken)
-			.catch(console.log);
+			.catch(console.error);
 	};
 
 	return (
