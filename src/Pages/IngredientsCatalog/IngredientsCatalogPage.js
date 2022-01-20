@@ -33,7 +33,7 @@ const IngredientsCatalogPage = () => {
 		<>
 			<Header />
 			<Heading>Ингредиенты</Heading>
-			<div className="page-content">
+			<div className="page-content filter-contained">
 				<IngredientsFilter setFiltered={setIngredients} />
 				<div className="cards-container">
 					{ingredients?.map((i) => (

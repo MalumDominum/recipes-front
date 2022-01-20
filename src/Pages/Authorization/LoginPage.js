@@ -47,7 +47,7 @@ const LoginForm = () => {
 				Войти
 			</button>
 			<Link to="/sign-up" className="link">
-				Ещё не зарегестрировались?
+				Ещё не зарегистрировались?
 			</Link>
 		</form>
 	);

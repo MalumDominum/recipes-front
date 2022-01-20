@@ -41,3 +41,18 @@ textarea.description {
 	width: 55px;
 	height: 50px;
 }
+
+.return-button {
+	position: absolute;
+	background-image: url(~/assets/sign-up-green.svg);
+	top: 455px;
+	right: 370px;
+	width: 40px;
+	height: 30px;
+	transform: rotate(180deg);
+	transition: right 0.2s 0.1s;
+}
+
+.return-button:hover {
+	right: 375px;
+}

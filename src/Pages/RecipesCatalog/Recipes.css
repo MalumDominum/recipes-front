@@ -7,14 +7,17 @@
 	margin-bottom: 30px;
 }
 
+.page-content.filter-contained .cards-container:nth-child(2) {
+	align-items: flex-start;
+	position: sticky;
+}
+
 /* [RECIPES CARDS] */
 
 .cards-container {
-	position: sticky;
 	width: 100%;
 	bottom: 5%;
 	gap: 40px;
-	align-items: flex-start;
 }
 
 .card-container {
@@ -130,10 +133,10 @@
 .bookmark-button.saved {
 	background-color: var(--secondary-color);
 }
-
 .card-container:hover .bookmark-button {
 	top: 20px;
 }
+
 .bookmark-count {
 	right: 20px;
 }
@@ -174,4 +177,12 @@
 	background: linear-gradient(90deg, var(--star-color) var(--percent), var(--star-background) var(--percent));
 	background-clip: text;
 	color: transparent;
+}
+
+.delete-button {
+	background-image: url(~/assets/delete.svg);
+}
+
+.edit-button {
+	background-image: url(~/assets/edit.svg);
 }

@@ -11,15 +11,25 @@
 	font-size: 75px;
 }
 
+#main-title.small {
+	font-size: 55px;
+	margin-bottom: 20px;
+}
+
 #main-title::before {
 	content: attr(data-text);
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	z-index: -1;
+	z-index: -2;
 	font-size: 2em;
+	inline-size: max-content;
 	color: #fff;
+}
+
+#main-title.small::before {
+	font-size: 2em;
 }
 
 .waves-background {

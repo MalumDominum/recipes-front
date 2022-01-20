@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect, useRef, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { UrlContext } from "~/App";
 import useValueSaver from "~/CustomHooks/useValueSaver";
 import useToken from "~/CustomHooks/useToken";
@@ -20,11 +20,21 @@ const initialState = {
 	steps: "",
 };
 
-const Select = ({ options, setState, name }) => {
+const Select = ({ options, selected, setState, name, blankName }) => {
+	const [blankSelected, setBlankSelected] = useState(true);
+
+	const onSelectHandle = (event) => {
+		if (!isNaN(event.target.value)) {
+			setState(event);
+			setBlankSelected(false);
+		} else setBlankSelected(true);
+	};
+
 	return (
-		<select onChange={setState} name={name}>
+		<select onChange={onSelectHandle} name={name} style={blankSelected ? { color: "#7c7c7c" } : null}>
+			<option>{blankName}</option>
 			{options.map((option) => (
-				<option value={option.id} key={option.id}>
+				<option value={option.id} key={option.id} selected={option.id === selected}>
 					{option.name}
 				</option>
 			))}
@@ -39,12 +49,12 @@ const FileUploader = ({ selectedFile, setSelectedFile }) => {
 
 	return (
 		<label className="upload-label container" htmlFor="upload-photo">
-			<input id="upload-photo" type="file" name="file" onChange={fileUploadedHandler} required />
+			<input id="upload-photo" type="file" name="file" onChange={fileUploadedHandler} required={!selectedFile} />
 			<div className="upload-img"></div>
 			<span>{!selectedFile ? "Добавить фото (Загрузить)" : "Фото загружено"}</span>
 			{selectedFile && supportedTypes.includes(selectedFile.type) ? (
 				<>
-					<span>Название файла: {selectedFile.name}</span>
+					{selectedFile.name ? <span>Название файла: {selectedFile.name}</span> : null}
 					<span>Размер: {Math.round((selectedFile.size / 1024 / 1024 + Number.EPSILON) * 100) / 100} Mb</span>
 				</>
 			) : selectedFile ? (
@@ -69,8 +79,10 @@ const IngredientInputs = () => {
 	return null;
 };
 
-const CreateForm = () => {
+const CreateForm = ({ editing }) => {
 	const navigate = useNavigate();
+	const { editingRecipeId } = useParams();
+
 	const [recipe, setRecipeValue] = useValueSaver(initialState);
 	const [token] = useToken();
 	const apiRootUrl = useContext(UrlContext);
@@ -92,41 +104,66 @@ const CreateForm = () => {
 				.catch(console.error),
 		[]
 	);
+	useEffect(
+		async () =>
+			editing
+				? await sendRequest(null, apiRootUrl + "recipes/" + editingRecipeId, "GET")
+						.then((response) => {
+							setRecipeValue(null, {
+								type: "set-all-field-values",
+								value: {
+									...response,
+									steps: response.steps.replaceAll("\\n", "\r\n"),
+									description: response.description.replaceAll("\\n", "\r\n"),
+								},
+							});
+							setSelectedFile(
+								new File([response.image], "", {
+									type: "image/jpg",
+								})
+							);
+						})
+						.catch(console.error)
+				: null,
+		[]
+	);
 
 	const onSubmitHandle = (event) => {
 		event.preventDefault();
 		const reader = new FileReader();
 		reader.readAsDataURL(selectedFile);
 		reader.onload = async () => {
-			const image = reader.result.substring(reader.result.indexOf(",") + 1);
+			const image = editing ? reader.result : reader.result.substring(reader.result.indexOf(",") + 1);
 
+			const requestBody = {
+				name: recipe.name,
+				image: image,
+				cookingTime: parseInt(recipe.cookingTime),
+				calories: parseInt(recipe.calories),
+				proteins: parseInt(recipe.proteins),
+				fats: parseInt(recipe.fats),
+				carbs: parseInt(recipe.carbs),
+				categoryId: parseInt(recipe.categoryId),
+				cuisineId: parseInt(recipe.cuisineId),
+				description: recipe.description.replaceAll(/\r\n/g, "\\n").replaceAll(/[\r\n]/g, "\\n"),
+				steps: recipe.steps.replaceAll(/\r\n/g, "\\n").replaceAll(/[\r\n]/g, "\\n"),
+				authorId: parseInt(token.id),
+			};
 			await sendRequest(
-				{
-					name: recipe.name,
-					image: image,
-					cookingTime: parseInt(recipe.cookingTime),
-					calories: parseInt(recipe.calories),
-					proteins: parseInt(recipe.proteins),
-					fats: parseInt(recipe.fats),
-					carbs: parseInt(recipe.carbs),
-					categoryId: parseInt(recipe.categoryId),
-					cuisineId: parseInt(recipe.cuisineId),
-					description: recipe.description,
-					steps: recipe.steps,
-					authorId: parseInt(token.id),
-				},
-				apiRootUrl + "recipes",
-				"POST"
+				editing ? { ...requestBody, id: editingRecipeId } : requestBody,
+				apiRootUrl + "recipes/" + (editing ? editingRecipeId : ""),
+				editing ? "PUT" : "POST"
 			)
-				.then((response) => navigate("/recipes/" + response.id))
+				.then(navigate("/recipes/" + editingRecipeId))
 				.catch(console.error);
 		};
-		reader.onerror = console.log;
+		reader.onerror = console.error;
 	};
 
 	return (
 		<form className="form-container" onSubmit={onSubmitHandle}>
 			<div className="container">
+				{editing ? <Link className="return-button img" to={"/recipes/" + recipe.id} /> : null}
 				<input value={recipe.name} onChange={setRecipeValue} name="name" type="text" placeholder="Название рецепта" required />
 				<input
 					value={recipe.cookingTime}
@@ -139,14 +176,44 @@ const CreateForm = () => {
 				/>
 			</div>
 			<div className="params-container">
-				<input value={recipe.calories} onChange={setRecipeValue} name="calories" type="text" placeholder="Калории" maxLength="5" />
-				<input value={recipe.proteins} onChange={setRecipeValue} name="proteins" type="text" placeholder="Протеины" maxLength="5" />
+				<input
+					value={recipe.calories}
+					onChange={setRecipeValue}
+					name="calories"
+					type="text"
+					placeholder="Калории"
+					maxLength="5"
+				/>
+				<input
+					value={recipe.proteins}
+					onChange={setRecipeValue}
+					name="proteins"
+					type="text"
+					placeholder="Протеины"
+					maxLength="5"
+				/>
 				<input value={recipe.fats} onChange={setRecipeValue} name="fats" type="text" placeholder="Жиры" maxLength="5" />
 				<input value={recipe.carbs} onChange={setRecipeValue} name="carbs" type="text" placeholder="Углеводы" maxLength="5" />
 			</div>
 			<div className="container">
-				{categoryOptions ? <Select options={categoryOptions} setState={setRecipeValue} name="categoryId" /> : null}
-				{cuisineOptions ? <Select options={cuisineOptions} setState={setRecipeValue} name="cuisineId" /> : null}
+				{categoryOptions ? (
+					<Select
+						options={categoryOptions}
+						selected={editing ? recipe.categoryId : null}
+						setState={setRecipeValue}
+						name="categoryId"
+						blankName="Выберите категорию"
+					/>
+				) : null}
+				{cuisineOptions ? (
+					<Select
+						options={cuisineOptions}
+						selected={editing ? recipe.cuisineId : null}
+						setState={setRecipeValue}
+						name="cuisineId"
+						blankName="Выберите кухню"
+					/>
+				) : null}
 			</div>
 			<FileUploader selectedFile={selectedFile} setSelectedFile={setSelectedFile} />
 			<IngredientInputs />
@@ -168,17 +235,17 @@ const CreateForm = () => {
 				autoComplete="on"
 				className="description"
 			/>
-			<button className="sign-up-button">Добавить рецепт</button>
+			<button className="sign-up-button">{editing ? "Изменить" : "Добавить"} рецепт</button>
 		</form>
 	);
 };
 
-const CreateRecipePage = () => {
+const CreateRecipePage = ({ editing }) => {
 	return (
 		<>
 			<Header />
-			<Heading>Создание</Heading>
-			<CreateForm />
+			<Heading>{editing ? "Изменение" : "Создание"}</Heading>
+			<CreateForm editing={editing} />
 		</>
 	);
 };

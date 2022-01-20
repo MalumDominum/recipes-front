@@ -131,6 +131,20 @@
 	margin: 5px;
 	font-size: 16px;
 	justify-content: start;
+	transition: all 0.8s, opacity 0.3s;
+}
+
+.checkbox-container.hidden {
+	opacity: 0;
+	height: 0;
+	padding: 0;
+	margin: 0;
+}
+
+.checkbox-container.hidden * {
+	height: 0;
+	padding: 0;
+	margin: 0;
 }
 
 .checkbox-container span {

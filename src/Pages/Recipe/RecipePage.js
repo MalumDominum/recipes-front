@@ -3,30 +3,105 @@ import { useParams } from "react-router-dom";
 import { UrlContext } from "~/App";
 import sendRequest from "~/Common/sendRequest";
 import ParagraphWithNewLines from "~/Common/ParagraphWithNewLines";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "~/Common/Header.js";
+import useToken from "~/CustomHooks/useToken";
 import "~/index.css";
-import "./Recipe.css";
+import "~/Common/Individual.css";
 
 const Recipe = (props) => {
-	const [isBookmarked, setBookmark] = useState(props.isSaved);
+	const rootRequestUrl = useContext(UrlContext);
+	const navigate = useNavigate();
+	const [token] = useToken();
 
-	const bookmarkOnClickHandle = () => setBookmark((isBookmarked) => !isBookmarked);
+	const [extraData, setExtraData] = useState({});
+	const [isBookmarked, setIsBookmarked] = useState(false);
 
-	const backgroundImage = { backgroundImage: "url(data:image/jpg;base64," + props.image + ")" };
+	useEffect(async () => {
+		if (token)
+			sendRequest(null, `${rootRequestUrl}bookmarks/recipes/${props.recipeId}`, "GET").then((bookmarks) =>
+				setIsBookmarked(bookmarks.map((b) => b.userId).includes(token.id))
+			);
+		let data = {};
+		await Promise.all([
+			sendRequest(null, `${rootRequestUrl}categories/${props.categoryId}`, "GET").then(
+				(category) => (data.category = category.name)
+			),
+			sendRequest(null, `${rootRequestUrl}cuisines/${props.cuisineId}`, "GET").then((cuisine) => (data.cuisine = cuisine.name)),
+			sendRequest(null, `${rootRequestUrl}users/${props.authorId}`, "GET").then(
+				(author) => (data.author = `${author.firstName} ${author.lastName}`)
+			),
+			sendRequest(null, `${rootRequestUrl}bookmarks/recipes/${props.recipeId}/count`, "GET").then(
+				(response) => (data.bookmarksCount = response.count)
+			),
+		]);
+		setExtraData(data);
+	}, []);
+
+	const onBookmarkClickHandle = () =>
+		token
+			? !isBookmarked
+				? sendRequest(
+						{
+							userId: token.id,
+							recipeId: props.recipeId,
+						},
+						rootRequestUrl + "bookmarks",
+						"POST"
+				  )
+						.then(() => {
+							setIsBookmarked((isBookmarked) => !isBookmarked);
+							setExtraData((data) => ({ ...data, bookmarksCount: data.bookmarksCount + 1 }));
+						})
+						.catch(console.error)
+				: sendRequest(null, `${rootRequestUrl}bookmarks?userId=${token.id}&recipeId=${props.recipeId}`, "DELETE")
+						.then(() => {
+							setIsBookmarked((isBookmarked) => !isBookmarked);
+							setExtraData((data) => ({ ...data, bookmarksCount: data.bookmarksCount - 1 }));
+						})
+						.catch(console.error)
+			: navigate("/sign-up");
+
+	const onDeleteClickHandle = () =>
+		sendRequest(null, rootRequestUrl + "recipes/" + props.recipeId, "DELETE")
+			.then(() => navigate("/recipes"))
+			.catch(console.error);
+
+	const backgroundImage = {
+		backgroundImage: "url(data:image/jpg;base64," + props.image + ")",
+		boxShadow: props.authorId == token.id ? "rgb(0 0 0 / 70%) -110px 0px 70px -25px inset" : "",
+	};
+
+	const hours = Math.floor(props.time / 60);
+	const minutes = Math.round((props.time / 60 - hours) * 60);
+	const formatedTime = (hours != 0 ? hours + (hours == 1 ? " час" : " часов ") : "") + (minutes != 0 ? minutes + " минут" : "");
+
 	return (
-		<div className="ingredient-container">
-			<div className="img" style={backgroundImage}></div>
+		<div className="individual-page">
+			<div className="main-img" style={backgroundImage}>
+				<button className={"bookmark-button img" + (isBookmarked ? " saved" : "")} onClick={onBookmarkClickHandle} />
+				{props.authorId == token.id ? (
+					<>
+						<Link className={"edit-button img"} to={"/recipes/edit/" + props.recipeId}></Link>
+						<button className={"delete-button img"} onClick={onDeleteClickHandle}></button>
+					</>
+				) : null}
+			</div>
 			<h1 className="">{props.heading}</h1>
 			<div className="card-links">
-				<Link to={"/recipes?categories=" + props.categoryId}>{props.category}</Link>
+				<Link to={"/recipes?categories=" + props.categoryId}>{extraData.category}</Link>
 				<span>•</span>
-				<Link to={"/recipes?cuisines=" + props.cuisineId}>{props.cuisine} кухня</Link>
+				<Link to={"/recipes?cuisines=" + props.cuisineId}>{extraData.cuisine} кухня</Link>
 			</div>
-			<div className="author">Автор: {props.author}</div>
-			<div className="coocking-time">{props.time} минут</div>
-			<span className="bookmark-count">{props.bookmarkCount}</span>
-			<button className={"bookmark-button img" + (isBookmarked ? " saved" : "")} onClick={bookmarkOnClickHandle}></button>
+			<div style={{ width: "100%", textAlign: "center" }}>
+				<Link className="author" to={`/recipes/author/${props.authorId}`}>
+					Автор: {extraData.author}
+				</Link>
+				<span className="bookmark-count" style={{ marginLeft: 20 }}>
+					{extraData.bookmarksCount}
+				</span>
+			</div>
+			<div className="coocking-time">Время приготовления: {formatedTime}</div>
 			<div className="rating-container">
 				<div className="stars" style={{ "--rating": props.rating }}>
 					{/*[1, 2, 3, 4, 5].map((n) => (
@@ -59,23 +134,21 @@ const RecipePage = () => {
 	return (
 		<>
 			<Header />
+			<div className="img waves-background"></div>
 			{recipe ? (
 				<Recipe
 					recipeId={recipe.id}
 					heading={recipe.name}
 					image={recipe.image}
-					category="blank"
 					categoryId={recipe.categoryId}
-					cuisine="blank"
 					cuisineId={recipe.cuisineId}
-					author="blank"
+					authorId={recipe.authorId}
 					time={recipe.cookingTime}
 					rating={4.39}
 					calories={recipe.calories}
 					proteines={recipe.proteines}
 					fats={recipe.fats}
 					carbs={recipe.carbs}
-					bookmarkCount="307"
 					ingredientCount="10"
 					description={recipe.description}
 					steps={recipe.steps}
@@ -83,7 +156,6 @@ const RecipePage = () => {
 						{ id: 1, heading: "Ананас" },
 						{ id: 2, heading: "Вешанки" },
 					]}
-					isSaved={true}
 				/>
 			) : null}
 		</>

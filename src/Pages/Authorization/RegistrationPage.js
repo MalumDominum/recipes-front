@@ -61,8 +61,8 @@ const RegistrationForm = () => {
 					placeholder="Введите пароль"
 					pattern={passwordRegExp}
 					title={passwordTitle}
-					minlength={passwordMinLength}
-					maxlength={passwordMaxLenght}
+					minLength={passwordMinLength}
+					maxLength={passwordMaxLenght}
 				/>
 			</div>
 			<div className="container">
@@ -72,8 +72,8 @@ const RegistrationForm = () => {
 					name="firstName"
 					type="text"
 					placeholder="Введите имя"
-					minlength="2"
-					maxlength="32"
+					minLength="2"
+					maxLength="32"
 					required
 				/>
 				<input
@@ -82,8 +82,8 @@ const RegistrationForm = () => {
 					name="lastName"
 					type="text"
 					placeholder="Введите фамилию"
-					minlength="2"
-					maxlength="32"
+					minLength="2"
+					maxLength="32"
 					required
 				/>
 			</div>

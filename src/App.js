@@ -30,6 +30,9 @@ const App = () => {
 					<Route path="/recipes/new" element={<PrivateRoute />}>
 						<Route path="/recipes/new" element={<CreateRecipePage />} />
 					</Route>
+					<Route path="/recipes/edit/:editingRecipeId" element={<PrivateRoute />}>
+						<Route path="/recipes/edit/:editingRecipeId" element={<CreateRecipePage editing={true} />} />
+					</Route>
 					<Route path="/recipes/saved" element={<PrivateRoute />}>
 						<Route path="/recipes/saved" element={<RecipesCatalogPage filterSaved={true} />} />
 					</Route>
