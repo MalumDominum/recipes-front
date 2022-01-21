@@ -5,7 +5,7 @@
 	margin: -20px auto 50px auto;
 }
 
-.form-container .container {
+.form-container > .container {
 	gap: 30px;
 }
 

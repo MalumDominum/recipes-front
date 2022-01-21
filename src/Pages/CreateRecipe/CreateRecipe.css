@@ -56,3 +56,36 @@ textarea.description {
 .return-button:hover {
 	right: 375px;
 }
+
+.ingridients-select {
+	flex-direction: column;
+	width: 100%;
+	gap: 10px;
+}
+
+.select-item {
+	position: relative;
+	width: 100%;
+	gap: 10px;
+}
+
+.remove-button {
+	position: absolute;
+	background-image: url(~/assets/remove-green.svg);
+	width: 30px;
+	height: 30px;
+	right: -40px;
+}
+
+.add-button {
+	width: 96%;
+	height: 40px;
+	background-color: var(--primary-color);
+	border-radius: 7px;
+}
+
+.add-img {
+	background-image: url(~/assets/add-white.svg);
+	width: 30px;
+	height: 30px;
+}

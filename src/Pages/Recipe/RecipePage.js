@@ -111,14 +111,14 @@ const Recipe = (props) => {
 				{props.rating}
 			</div>
 			{props.description ? <ParagraphWithNewLines className="description" text={props.description} /> : null}
-			<div className="ingredients-count">{props.ingredientCount} Ингредиентов</div>
+			{/* <div className="ingredients-count">{props.ingredientCount} Ингредиентов</div>
 			<ul className="ingredients-list">
 				{props.ingredients.map((i) => (
 					<li className="ingredient-item" key={i.id}>
 						<Link to={"/ingredients/" + i.id}>{i.heading}</Link>
 					</li>
 				))}
-			</ul>
+			</ul> */}
 			<ParagraphWithNewLines className="description" text={props.steps} />
 		</div>
 	);

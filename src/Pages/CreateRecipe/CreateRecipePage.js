@@ -64,19 +64,94 @@ const FileUploader = ({ selectedFile, setSelectedFile }) => {
 	);
 };
 
-const IngredientInputs = () => {
+const IngredientSelectItem = (props) => {
+	return (
+		<div className="select-item container">
+			<Select
+				options={props.ingredientOptions}
+				//selected={editing ? recipe.categoryId : null}
+				setState={props.setState}
+				name="ingredient-1"
+				blankName="Выберите ингредиент"
+			/>
+			<input
+				value={props.unitsValue}
+				onChange={(event) =>
+					props.setState((i) => {
+						return { ...i, units: event.target.value };
+					})
+				}
+				name="unit-1"
+				type="text"
+				placeholder="Колво"
+				style={{ width: "105px" }}
+			/>
+			<input
+				value={props.unitsTypeValue}
+				onChange={(event) =>
+					props.setState((i) => {
+						return { ...i, unitsType: event.target.value };
+					})
+				}
+				name="unit-type-1"
+				type="text"
+				placeholder="Ед. изм."
+				style={{ width: "105px" }}
+			/>
+			{props.removeHandler ? <button className="remove-button img" data-num={props.num} onClick={props.removeHandler} /> : null}
+		</div>
+	);
+};
+
+const initialIngredientSelects = [{ num: 0 }, { num: 1 }];
+const initialIngredientValues = [
+	{ units: "", unitsType: "" },
+	{ units: "", unitsType: "" },
+];
+
+const IngredientInputs = ({ value, setState }) => {
 	const rootApiUrl = useContext(UrlContext);
-	const [ingredients, setIngredients] = useState();
+	const [ingredientOptions, setIngredientOptions] = useState();
+	const [ingredientSelects, setIngredientSelects] = useState(initialIngredientSelects);
+	const [ingredientsChoosen, setIngredientsChoosen] = useState(initialIngredientValues);
 
 	useEffect(
 		() =>
 			sendRequest(null, rootApiUrl + "ingredients", "GET")
-				.then(setIngredients)
+				.then(setIngredientOptions)
 				.catch(console.error),
 		[]
 	);
 
-	return null;
+	const addHandler = (event) => {
+		event.preventDefault();
+		console.log(ingredientSelects);
+		setIngredientSelects((i) => i.concat({ num: i.at(-1).num + 1 }));
+	};
+	const removeHandler = (event) => {
+		event.preventDefault();
+		setIngredientSelects((i) => i.filter((item) => item.num != event.target.dataset.num));
+	};
+
+	return ingredientOptions ? (
+		<div className="ingridients-select container">
+			{ingredientSelects.map((s, k) => (
+				<IngredientSelectItem
+					ingredientOptions={ingredientOptions}
+					ingredientValue={ingredientsChoosen[k]}
+					setState={setIngredientsChoosen}
+					removeHandler={ingredientSelects.length > 2 ? removeHandler : null}
+					num={s.num}
+					key={s.num}
+				/>
+			))}
+			{ingredientSelects.length <= 15 ? (
+				<button className="add-button container" onClick={addHandler}>
+					<div className="add-img"></div>
+				</button>
+			) : null}
+		</div>
+	) : null;
 };
 
 const CreateForm = ({ editing }) => {
@@ -90,6 +165,7 @@ const CreateForm = ({ editing }) => {
 
 	const [categoryOptions, setCategoryOptions] = useState();
 	const [cuisineOptions, setCuisineOptions] = useState();
+	const [ingredients, setIngredientValues] = useState([]);
 	useEffect(
 		async () =>
 			await sendRequest(null, apiRootUrl + "categories", "GET")
@@ -133,7 +209,7 @@ const CreateForm = ({ editing }) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(selectedFile);
 		reader.onload = async () => {
-			const image = editing ? reader.result : reader.result.substring(reader.result.indexOf(",") + 1);
+			const image = reader.result.substring(reader.result.indexOf(",") + 1);
 
 			const requestBody = {
 				name: recipe.name,
@@ -216,7 +292,7 @@ const CreateForm = ({ editing }) => {
 				) : null}
 			</div>
 			<FileUploader selectedFile={selectedFile} setSelectedFile={setSelectedFile} />
-			<IngredientInputs />
+			<IngredientInputs value={ingredients} setState={setIngredientValues} />
 			<textarea
 				value={recipe.description}
 				onChange={setRecipeValue}
